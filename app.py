@@ -53,6 +53,27 @@ class APIHandler(BaseHTTPRequestHandler):
                 "messages": messages,
                 "total": len(messages)
             })
+    
+        
+        if self.path.startswith("/messages/"):
+            try:
+                index = int(self.path.split("/")[-1])
+                messages = read_messages()
+
+                if index < 0 or index >= len(messages):
+                    return self.send_json(404, {
+                        "error": "Message not found"
+                    })
+
+                return self.send_json(200, {
+                    "message": messages[index]
+                })
+
+            except ValueError:
+                return self.send_json(400, {
+                    "error": "Invalid message ID"
+                })
+
 
         self.send_json(404, {"error": "Endpoint not found"})
 
